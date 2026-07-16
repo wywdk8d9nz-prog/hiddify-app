@@ -1,7 +1,7 @@
 name: Build Custom Launcher
 
 on:
-  workflow_dispatch: # Это дает ту самую кнопку запуска вручную!
+  workflow_dispatch: # Кнопка ручного запуска
 
 jobs:
   build-android:
@@ -22,10 +22,18 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Install Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make depdep # Ставим make для выполнения команд из Makefile
+
       - name: Install Dependencies
         run: |
           flutter pub get
-          dart run build_runner build --delete-conflicting-outputs
+
+      - name: Generate Code (Hiddify Way)
+        run: |
+          make gen # Запускаем родной генератор Hiddify, который прописан в Makefile
 
       - name: Build APK
         run: flutter build apk --release --split-per-abi
